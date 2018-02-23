@@ -1,5 +1,12 @@
 var TIMEOUT_IN_SECS = 3 * 60
 var TEMPLATE = '<h1><span class="js-timer-minutes">00</span>:<span class="js-timer-seconds">00</span></h1>'
+var MOTTO = ['REMEMBER WORK? DO IT.',
+             'YOU\'RE DYING SOON. WORK.',
+             'WHAT THE HECK? GO WORK.',
+             'YOUR DREAMS ARE DYING. GO WORK.',
+             'KNOCK KNOCK. WHO\'S THERE? WORK.'
+            ];
+var MSG_TIMEOUT = 30
 
 function padZero(number){
   return ("00" + String(number)).slice(-2);
@@ -56,7 +63,7 @@ class TimerWidget{
     // adds HTML tag to current page
     this.timerContainer = document.createElement('div')
 
-    this.timerContainer.setAttribute("style", "height: 100px;")
+    this.timerContainer.setAttribute("style", "color: #8fb3cd; height: 100px; position: fixed; z-index: 1; top:23px;")
     this.timerContainer.innerHTML = TEMPLATE
 
     rootTag.insertBefore(this.timerContainer, rootTag.firstChild)
@@ -83,14 +90,25 @@ class TimerWidget{
 function main(){
 
   var timer = new Timer(TIMEOUT_IN_SECS)
-  var timerWiget = new TimerWidget()
+  var timerWidget = new TimerWidget()
   var intervalId = null
 
-  timerWiget.mount(document.body)
+  timerWidget.mount(document.body)
+
+  function showRandomMessage() {
+    var random_message = (MOTTO[Math.floor(Math.random() * MOTTO.length)]);
+    window.alert(random_message);
+  }
 
   function handleIntervalTick(){
     var secsLeft = timer.calculateSecsLeft()
-    timerWiget.update(secsLeft)
+    if (secsLeft === 0) {
+            showRandomMessage()
+            timer = new Timer(MSG_TIMEOUT);
+            secsLeft = timer.calculateSecsLeft();
+            timer.start();
+        }
+    timerWidget.update(secsLeft)
   }
 
   function handleVisibilityChange(){
